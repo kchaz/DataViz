@@ -51,12 +51,12 @@ plotly::layout(xaxis = list(title = "East-West Direction"),
                  yaxis = list(title = "North-South Direction"),
                 showlegend = F
         ) %>%
-plotly::animation_opts(frame = 400,
+plotly::animation_opts(frame = 200,
                        transition = 10,
                        redraw = F) 
 ```
 
-**Version 2**: This plots the circular mean and the 5% and 95% quantile of the posterior circular means, 5 at a time. It's a bit funky to look at but it does give a better picture because it show that the uncertainty in the actual wind direction is often quite wide.
+**Version 2**: This plots the circular mean and the 5% and 95% quantile of the posterior circular means, 5 at a time. It's a bit funky to look at but it does give a better picture because it show that the uncertainty in the wind direction is often quite large.
 
 ```{r}
 Tmax = dim(df)[1]
