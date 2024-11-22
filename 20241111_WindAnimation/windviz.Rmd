@@ -1,0 +1,51 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+```{r}
+read.csv("wind_processed.csv")
+
+Tmax = 2000
+t = 20
+n_frames = Tmax/t #must pick something divisible
+
+#make each transition point appear double 
+
+#repeat every t^th twice so e.g. if t=20, get 1:20, 20:40 etc.
+ind = sapply(1:n_frames, function(i){(t*(i-1)):(t*(i-1)+t)})
+ind = ind[2:length(ind)] #remove extra 0
+dfpad = df[ind,]
+
+dfpad$frame =  c(rep(1,t),rep(2:n_frames, each = t+1))
+
+
+plotly::plot_ly(data = dfpad,
+                 x = ~eastwest, #~ so looks for them in dataset
+                 y = ~northsouth,
+                 frame = ~frame,
+                 type = "scatter",
+                 text = ~paste("Time:", Time),
+                 mode = "lines+markers",
+                 marker = list(size = 8,
+                               symbol = "circle",
+                               sizemode = "diameter"),
+                 line = list(shape = "linear", width = 2)
+                ) %>%
+plotly::layout(xaxis = list(title = "East-West Direction"),
+                 yaxis = list(title = "North-South Direction"),
+                showlegend = F
+        ) %>%
+plotly::animation_opts(frame = 300,
+                       transition = 10,
+                       redraw = F) 
+
+#TODO: would be cool to somehow represent the uncertainty
+# Can get credible interval from posterior output, too...
+
+```
+
