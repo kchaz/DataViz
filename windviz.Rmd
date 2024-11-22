@@ -1,16 +1,16 @@
 ---
 title: "R Notebook"
 output:
-  html_document:
-    df_print: paged
+  html_document
 ---
-
+```{r, echo = F}
+library(tidyverse)
+df = read.csv("wind_processed.csv")
+```
 
 
 ```{r}
-read.csv("wind_processed.csv")
-
-Tmax = 2000
+Tmax = dim(df)[1]
 t = 20
 n_frames = Tmax/t #must pick something divisible
 
