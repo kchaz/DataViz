@@ -8,8 +8,9 @@ library(tidyverse)
 df = read.csv("wind_processed.csv")
 ```
 
+Version 1: This just plots the circular mean, 20 at a time
 
-```{r}
+```{r} 
 Tmax = dim(df)[1]
 t = 20
 n_frames = Tmax/t 
@@ -42,9 +43,64 @@ plotly::layout(xaxis = list(title = "East-West Direction"),
 plotly::animation_opts(frame = 400,
                        transition = 10,
                        redraw = F) 
+```
 
-#TODO: would be cool to somehow represent the uncertainty
-# Can get credible interval from posterior output, too...
+Version 2: This plots the circular mean and the 5% and 95% quantile of the circular means, 5 at a time. It's a bit funky to look at but it does give a better picture because it show that the uncertainty in the actual wind direction is often quite wide.
+
+```{r}
+Tmax = dim(df)[1]
+t = 5
+n_frames = Tmax/t 
+
+# add the lower and upper 
+main = cbind(df[,c("Time","Wind","eastwest", "northsouth")], type = rep("mean",Tmax))
+lower = cbind(df[,c("Time","Wind","eastwest.lower", "northsouth.lower")], type = rep("lower", Tmax))
+upper = cbind(df[,c("Time","Wind","eastwest.upper", "northsouth.upper")], type = rep("upper", Tmax))
+lower = rename(lower, "northsouth" = "northsouth.lower")
+lower = rename(lower, "eastwest" = "eastwest.lower")
+upper = rename(upper, "northsouth" = "northsouth.upper")
+upper = rename(upper, "eastwest" = "eastwest.upper")
+
+
+# Get pad indices
+# make each transition point appear double 
+# repeat every t^th twice so e.g. if t=20, get 1:20, 20:40 etc.
+ind = sapply(1:n_frames, function(i){(t*(i-1)):(t*(i-1)+t)})
+ind = ind[2:length(ind)] #remove extra 0
+main = main[ind,]
+lower = lower[ind,]
+upper = upper[ind,]
+
+# create frames and add to each
+frame =  c(rep(1,t),rep(2:n_frames, each = t+1))
+main$frame = frame
+lower$frame = frame
+upper$frame = frame
+
+#consolidate
+df_all = rbind(main, lower, upper)
+
+
+plotly::plot_ly(data = df_all,
+                 x = ~eastwest, #~ so looks for them in dataset
+                 y = ~northsouth,
+                 frame = ~frame,
+                 color = ~type,
+                 type = "scatter",
+                 text = ~paste("Time:", Time),
+                 mode = "lines+markers",
+                 marker = list(size = 8,
+                               symbol = "circle",
+                               sizemode = "diameter"),
+                 line = list(shape = "linear", width = 2)
+                ) %>%
+plotly::layout(xaxis = list(title = "East-West Direction"),
+                 yaxis = list(title = "North-South Direction"),
+                showlegend = T
+        ) %>%
+plotly::animation_opts(frame = 200,
+                       transition = 5,
+                       redraw = F) 
 
 ```
 
