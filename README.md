@@ -1,2 +1,0 @@
-# DataViz
-Miscellaneous Data Visualizations
