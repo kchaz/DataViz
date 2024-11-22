@@ -19,7 +19,7 @@ library(tidyverse)
 df = read.csv("wind_processed.csv")
 ```
 
-**Version 1**: This just plots the circular mean, 20 at a time
+**Version 1**: This just plots the circular mean, 20 at a time. The 20 at a time is a bit strange-looking, but it does make it easier to visually track the trend in the motion over time than if I just showed a single dot. I "pad" each segment of 20 so that you see times 1-20, 20-40, 40-60 etc. with overlap (helps continuity of the motion).
 
 ```{r} 
 Tmax = dim(df)[1]
@@ -56,7 +56,7 @@ plotly::animation_opts(frame = 200,
                        redraw = F) 
 ```
 
-**Version 2**: This plots the circular mean and the 5% and 95% quantile of the posterior circular means, 5 at a time. It's a bit funky to look at but it does give a better picture because it show that the uncertainty in the wind direction is often quite large.
+**Version 2**: This plots the circular mean and the 5% and 95% quantile of the posterior circular means, 5 at a time. It's a bit funky to look at but it does give a better picture because it shows that the uncertainty in the wind direction is often quite large.
 
 ```{r}
 Tmax = dim(df)[1]
